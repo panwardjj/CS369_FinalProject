@@ -17,7 +17,20 @@ const ProductById = () => {
             });
     }, []);
 
-    return <div>ProductById {product[0] ? product[0].name + ' ' + product[0].price : 'not found'}</div>
-}
+    return  (
+    <div className="product-list" >
+        <div className="product-card">
+            <h1>{product[0] ? product[0].name : 'not found'}</h1>
+            <img src={product[0].image} />
+            <h3>DETAILS</h3>
+            <p>{product[0].description}</p>
+            <h3>SIZE</h3>
+            <p>{product[0].size}</p>
+            <h3>MATERIAL</h3>
+            <p>{product[0].material}</p>
+        </div>
+    </div>
+    );
+    };
 
 export default ProductById

@@ -24,7 +24,7 @@ const ProductList = () => {
                         <img src={catalogue.image} alt={catalogue.name} />
                         <h2>{catalogue.name}</h2>
                         <p>Price: ${catalogue.price}</p>
-                        <Link to={"/product/" + catalogue.id}>Blogs</Link>
+                        <Link to={"/product/" + catalogue.id}>view</Link>
                     </div>
                 ))}
             </div>
