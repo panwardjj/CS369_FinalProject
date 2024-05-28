@@ -1,11 +1,19 @@
 const express = require('express');
 const sql = require('mssql');
 const cors = require('cors');
+const passport = require('passport');
+const session = require('express-session');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = 8080;
 
-app.use(cors());
+app.use(cors({
+    origin:'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 
 // การตั้งค่าการเชื่อมต่อกับฐานข้อมูล MSSQL
@@ -15,10 +23,80 @@ const dbConfig = {
     server: 'localhost',
     database: 'store',
     options: {
-        encrypt: true, // ใช้เมื่อเชื่อมต่อกับ Azure SQL
-        trustServerCertificate: true // ใช้เมื่อเชื่อมต่อกับเซิร์ฟเวอร์ที่ไม่ปลอดภัย
+        encrypt: false, // ใช้เมื่อเชื่อมต่อกับ Azure SQL
+        trustServerCertificate: false // ใช้เมื่อเชื่อมต่อกับเซิร์ฟเวอร์ที่ไม่ปลอดภัย
     }
 };
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'mySecretKey',
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(
+  async function(username, password, done) {
+    // authenticate user
+    // User.findOne({ username: username }, function(err, user) {
+    //   if (err) { return done(err); }
+    //   if (!user) { return done(null, false); }
+    //   if (!user.verifyPassword(password)) { return done(null, false); }
+    //   return done(null, user);
+    // });
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .input('username', sql.NVarChar, username)
+            .query('SELECT * FROM users WHERE username = @username');
+
+        const user = result.recordset[0];
+        if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+        }
+        // const hashed = bcrypt.hashSync(password, 8)
+        const isMatch = bcrypt.compareSync(password, user.password);
+        if (isMatch) {  
+            return done(null, user);
+        } else {
+            return done(null, false, { message: 'Incorrect password.' });
+        }
+    } catch (err) {
+        return done(err);
+    }
+
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async(id, done) => {
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query('SELECT * FROM Users WHERE id = @id');
+
+        const user = result.recordset[0];
+        done(null, user);
+    } catch (err) {
+        done(err, null);
+    }
+});
+
+app.post('/login', passport.authenticate('local'),(req, res) => {
+    const { username } = req.body
+    
+    console.log("🚀 ~ app.post ~ username:", username)
+    // var token = jwt.sign({ username: username }, 'secrect');
+    res.send({message: 'Logged in successfully', login_username :username});
+});
 
 // สร้าง API endpoint สำหรับดึงข้อมูลสินค้า
 app.get('/catalogue', async (req, res) => {
@@ -44,6 +122,28 @@ app.get('/product/:id', async (req, res) => {
         res.json(result.recordset);
     } catch (error) {
         res.status(500).send(error);
+    }
+});
+
+app.post('/addProduct', async (req, res) => {
+
+    const { post } = req.body
+    const { name, price, description } = post
+
+
+    try {
+        const pool = await sql.connect(dbConfig);
+        await pool.request()
+            .input('p1', sql.VarChar(50), name)
+            .input('p2', sql.Float, price)
+            .input('p3', sql.VarChar(50), description).query(`
+            INSERT INTO catalogue (name, price, description)
+            VALUES (@p1,@p2,@p3)
+        `);
+        res.status(201).send({ message: 'บันทึกสินค้าสำเร็จ' });
+    } catch (err) {
+        console.error('Error inserting product:', err);
+        res.status(500).send({ error: 'เกิดข้อผิดพลาดในการบันทึกสินค้า' });
     }
 });
 

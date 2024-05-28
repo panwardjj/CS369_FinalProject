@@ -6,7 +6,7 @@ export const Layout = () => {
     <nav>
       <ul>
         <li>
-          <Link to="/">Product List</Link>
+          <Link to="/catalogue">Product List</Link>
         </li>
         <li>
           <Link to="/page2">Page2</Link>

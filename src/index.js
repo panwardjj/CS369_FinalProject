@@ -6,13 +6,15 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from './Layout';
 import ProductById from './pages/ProductById';
+import Login from './pages/Login';
 
 export default function App() {
     return (
       <BrowserRouter>
         <Routes>
           <Route path="/"element={<Layout />}>
-            <Route index element={<ProductList />} />
+            <Route index element={<Login/>}/>
+            <Route path="/catalogue" element={<ProductList />} />
             <Route path="page2" element={<Page2 />} />
             <Route path="page3" element={<Page3 />} />
             <Route path="/product/:id" element={<ProductById />} />

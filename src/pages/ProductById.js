@@ -7,6 +7,7 @@ const ProductById = () => {
 
     const [product, setProduct] = useState([]);
 
+
     useEffect(() => {
         axios.get('http://localhost:8080/product/'+id)
             .then(response => {
@@ -21,13 +22,13 @@ const ProductById = () => {
     <div className="product-list" >
         <div className="product-card">
             <h1>{product[0] ? product[0].name : 'not found'}</h1>
-            <img src={product[0].image} />
+            <img src={product[0] ? product[0].image : 'not found'} />
             <h3>DETAILS</h3>
-            <p>{product[0].description}</p>
+            <p>{product[0] ? product[0].description : 'not found'}</p>
             <h3>SIZE</h3>
-            <p>{product[0].size}</p>
+            <p>{product[0] ? product[0].size : 'not found'}</p>
             <h3>MATERIAL</h3>
-            <p>{product[0].material}</p>
+            <p>{product[0] ? product[0].material : 'not found'}</p>
         </div>
     </div>
     );
