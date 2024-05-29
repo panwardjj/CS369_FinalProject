@@ -4,20 +4,30 @@ import axios from 'axios';
 export const Modal = ({closeModal,onSuccess}) => {
     const [post, setPost] = useState({
         name:" ",
+        image: " ",
         price:" ",
         description:" "
     })
 
+    //const [image, setImage] = useState([]);
+
     const [responseMessage, setResponseMessage] = useState('')
+    
     const handleInput = (event) => {
         setPost({...post, [event.target.name]: event.target.value}) 
     }
 
     function handleSubmit(event){
         event.preventDefault()
-        axios.post('http://localhost:8080/addProduct',{post})
+
+        const formDataToSend = new FormData();
+            Object.keys(post).forEach((key) => {
+                formDataToSend.append(key, post[key]);
+            });
+        axios.post('http://localhost:8080/addProduct', formDataToSend)
         
         .then(response => {
+            console.log("🚀 ~ Modal ~ post:", post)
             console.log(1)
             setResponseMessage('Successfully add product!')
             setTimeout(() => {
@@ -36,6 +46,18 @@ export const Modal = ({closeModal,onSuccess}) => {
         }
         )
     }
+
+    
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            setPost({...post, image:file});
+        } else {
+            console.log('Please select an image file.');
+            e.target.value = null;
+        }
+    };
+
     return (
         <div className="modal-container" 
         onClick={(e) => {
@@ -47,6 +69,10 @@ export const Modal = ({closeModal,onSuccess}) => {
                     <div className="form-group">
                         <label htmlFor="name">Name</label>
                         <input  onChange={handleInput} name="name"/>
+                    </div>
+                    <div>
+                        <label htmlFor="image">Image</label>
+                        <input type="file" accept="image/*" name="image" onChange={handleImageChange} required />
                     </div>
                     <div className="form-group">
                         <label htmlFor="price">Price</label>

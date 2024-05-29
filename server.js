@@ -6,7 +6,8 @@ const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
-
+const multer = require('multer');
+const path = require('path');
 const app = express();
 const port = 8080;
 
@@ -95,7 +96,7 @@ app.post('/login', passport.authenticate('local'),(req, res) => {
     
     console.log("🚀 ~ app.post ~ username:", username)
     // var token = jwt.sign({ username: username }, 'secrect');
-    res.send({message: 'Logged in successfully', login_username :username});
+    res.send({message: 'Logged in successfully', login_username:username});
 });
 
 // สร้าง API endpoint สำหรับดึงข้อมูลสินค้า
@@ -125,20 +126,41 @@ app.get('/product/:id', async (req, res) => {
     }
 });
 
-app.post('/addProduct', async (req, res) => {
+const uploadPath =  './public/image';
+// image uploading
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, uploadPath);
+    },
+    filename: function (req, file, cb) {
+    const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
+      const fileName = `${timestamp}_${random}.png`; // Append ".png"
+      cb(null, fileName);
+    }
+  });
+  const upload = multer({ storage: storage });
 
-    const { post } = req.body
-    const { name, price, description } = post
+app.post('/addProduct', upload.single('image'),async (req, res) => {
+
+    const { name, price, description } = req.body
+    const image = req.file ? req.file.path : null;
+    const imagePath = image.replace('public','')
+    
+    console.log("🚀 ~ app.post ~ imagePath:", imagePath)
+    console.log("🚀 ~ app.post ~ image:", image)
+    
 
 
     try {
         const pool = await sql.connect(dbConfig);
         await pool.request()
-            .input('p1', sql.VarChar(50), name)
-            .input('p2', sql.Float, price)
-            .input('p3', sql.VarChar(50), description).query(`
-            INSERT INTO catalogue (name, price, description)
-            VALUES (@p1,@p2,@p3)
+            .input('name', sql.VarChar(50), name)
+            .input('image', sql.VarChar(50), imagePath)
+            .input('price', sql.Float, price)
+            .input('description', sql.VarChar(50), description).query(`
+            INSERT INTO catalogue (name, image, price, description)
+            VALUES (@name,@image,@price,@description)
         `);
         res.status(201).send({ message: 'บันทึกสินค้าสำเร็จ' });
     } catch (err) {

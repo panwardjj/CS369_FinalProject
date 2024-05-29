@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+
 import { FaUser, FaLock } from "react-icons/fa";
 
 
-const Login = () => {
+export const ModalLogin = ({closeModal,onSuccess}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const user = localStorage.getItem('user')
-        if (user) {
-            navigate('/catalogue')
-        }
-    }, [])
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,16 +19,22 @@ const Login = () => {
                 password
             }, { withCredentials: true });
             localStorage.setItem('user', response.data.login_username);
-alert('login success')
-            navigate('/catalogue');
+            alert('login success')
+            closeModal()
+            onSuccess()
         } catch (error) {
             setMessage('Login failed');
         }
     };
 
     return (
-        <div className='login'>
-        <div className="wrapper">
+        <div className="modal-container" 
+        onClick={(e) => {
+            if(e.target.className === "modal-container") closeModal();
+        }}
+        >
+            <div className="modal-login">
+            <div className="wrapper">
             <div className="form-box">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
@@ -52,8 +52,8 @@ alert('login success')
             {message && <p>{message}</p>}
             </div>
         </div>
+            </div>
         </div>
-    );
+    )
 };
 
-export default Login;
