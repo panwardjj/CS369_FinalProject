@@ -93,7 +93,7 @@ passport.deserializeUser(async(id, done) => {
     }
 });
 
-app.post('/login', passport.authenticate('local'),(req, res) => {
+app.post('/api/login', passport.authenticate('local'),(req, res) => {
     const { username } = req.body
     
     console.log("🚀 ~ app.post ~ username:", username)
@@ -102,7 +102,7 @@ app.post('/login', passport.authenticate('local'),(req, res) => {
 });
 
 // create API endpoint
-app.get('/catalogue', async (req, res) => {
+app.get('/api/catalogue', async (req, res) => {
     try {
         //connect to db
         let pool = await sql.connect(dbConfig);
@@ -114,7 +114,7 @@ app.get('/catalogue', async (req, res) => {
     }
 });
 
-app.get('/product/:id', async (req, res) => {
+app.get('/api/product/:id', async (req, res) => {
     try {
         // เชื่อมต่อกับฐานข้อมูล
         let pool = await sql.connect(dbConfig);
@@ -143,7 +143,7 @@ const storage = multer.diskStorage({
   });
   const upload = multer({ storage: storage });
 
-app.post('/addProduct', upload.single('image'),async (req, res) => {
+app.post('/api/addProduct', upload.single('image'),async (req, res) => {
 
     const { name, price, description } = req.body
     const image = req.file ? req.file.path : null;
