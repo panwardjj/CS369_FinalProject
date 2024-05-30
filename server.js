@@ -147,7 +147,7 @@ app.post('/api/addProduct', upload.single('image'),async (req, res) => {
 
     const { name, price, description } = req.body
     const image = req.file ? req.file.path : null;
-    const imagePath = image.replace('public','')
+    const imagePath = image.replace(process.env.UPLOAD_PATH_TO_REPLACE,'')
     
     console.log("🚀 ~ app.post ~ imagePath:", imagePath)
     console.log("🚀 ~ app.post ~ image:", image)
