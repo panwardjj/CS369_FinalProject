@@ -129,7 +129,7 @@ app.get('/api/product/:id', async (req, res) => {
 });
 
 //image
-const uploadPath =  './public/image';
+const uploadPath =  process.env.UPLOAD_PATH;
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, uploadPath);
