@@ -145,7 +145,7 @@ const storage = multer.diskStorage({
 
 app.post('/api/addProduct', upload.single('image'),async (req, res) => {
 
-    const { name, price, description } = req.body
+    const { name, price, description, size, material } = req.body
     const image = req.file ? req.file.path : null;
     const imagePath = image.replace(process.env.UPLOAD_PATH_TO_REPLACE,'')
     
@@ -160,9 +160,11 @@ app.post('/api/addProduct', upload.single('image'),async (req, res) => {
             .input('name', sql.VarChar(50), name)
             .input('image', sql.VarChar(50), imagePath)
             .input('price', sql.Float, price)
-            .input('description', sql.VarChar(50), description).query(`
-            INSERT INTO catalogue (name, image, price, description)
-            VALUES (@name,@image,@price,@description)
+            .input('description', sql.VarChar(50), description)
+            .input('size', sql.VarChar(50), size)
+            .input('material', sql.VarChar(50), material).query(`
+            INSERT INTO catalogue (name, image, price, description, size, material)
+            VALUES (@name,@image,@price,@description, @size, @material)
         `);
         res.status(201).send({ message: 'บันทึกสินค้าสำเร็จ' });
     } catch (err) {

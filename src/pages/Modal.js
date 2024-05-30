@@ -6,7 +6,9 @@ export const Modal = ({closeModal,onSuccess}) => {
         name:" ",
         image: " ",
         price:" ",
-        description:" "
+        description:" ",
+        size:" ",
+        material:" "
     })
 
     //const [image, setImage] = useState([]);
@@ -81,6 +83,14 @@ export const Modal = ({closeModal,onSuccess}) => {
                     <div className="form-group">
                         <label htmlFor="description">Description</label>
                         <textarea  onChange={handleInput} name="description"/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="size">Size</label>
+                        <input  onChange={handleInput} name="size"/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="material">Material</label>
+                        <input  onChange={handleInput} name="material"/>
                     </div>
                     <div style={{
                         color: responseMessage === 'Successfully add product!' ?  'green' :'red',
