@@ -24,7 +24,7 @@ export const Modal = ({closeModal,onSuccess}) => {
             Object.keys(post).forEach((key) => {
                 formDataToSend.append(key, post[key]);
             });
-        axios.post('http://localhost:8080/addProduct', formDataToSend)
+        axios.post(process.env.REACT_APP_SERVER_URL + '/addProduct', formDataToSend)
         
         .then(response => {
             console.log("🚀 ~ Modal ~ post:", post)

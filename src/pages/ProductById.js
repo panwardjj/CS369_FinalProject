@@ -9,7 +9,7 @@ const ProductById = () => {
 
 
     useEffect(() => {
-        axios.get('http://localhost:8080/product/'+id)
+        axios.get(process.env.WEB_URL + '/product/'+id)
             .then(response => {
                 setProduct(response.data);
             })

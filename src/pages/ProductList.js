@@ -20,7 +20,7 @@ const ProductList = () => {
 
   
     const fetchItemList = () => {
-        axios.get('http://localhost:8080/catalogue')
+        axios.get(process.env.REACT_APP_SERVER_URL + '/catalogue')
         .then(response => {
             setCatalogue(response.data);
         })
