@@ -9,7 +9,7 @@ const ProductById = () => {
 
 
     useEffect(() => {
-        axios.get(process.env.WEB_URL + '/product/'+id)
+        axios.get(process.env.REACT_APP_SERVER_URL + '/product/'+id)
             .then(response => {
                 setProduct(response.data);
             })
@@ -25,10 +25,10 @@ const ProductById = () => {
             <img src={product[0] ? product[0].image : 'not found'} />
             <h3>DETAILS</h3>
             <p>{product[0] ? product[0].description : 'not found'}</p>
-            <h3>SIZE</h3>
+            {/* <h3>SIZE</h3>
             <p>{product[0] ? product[0].size : 'not found'}</p>
             <h3>MATERIAL</h3>
-            <p>{product[0] ? product[0].material : 'not found'}</p>
+            <p>{product[0] ? product[0].material : 'not found'}</p> */}
         </div>
     </div>
     );
