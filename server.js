@@ -17,15 +17,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// การตั้งค่าการเชื่อมต่อกับฐานข้อมูล MSSQL
+//set db configue
 const dbConfig = {
     user: 'SA',
     password: 'MyStrongPass123',
     server: 'localhost',
     database: 'store',
     options: {
-        encrypt: false, // ใช้เมื่อเชื่อมต่อกับ Azure SQL
-        trustServerCertificate: false // ใช้เมื่อเชื่อมต่อกับเซิร์ฟเวอร์ที่ไม่ปลอดภัย
+        encrypt: false, 
+        trustServerCertificate: false 
     }
 };
 
@@ -99,10 +99,10 @@ app.post('/login', passport.authenticate('local'),(req, res) => {
     res.send({message: 'Logged in successfully', login_username:username});
 });
 
-// สร้าง API endpoint สำหรับดึงข้อมูลสินค้า
+// create API endpoint
 app.get('/catalogue', async (req, res) => {
     try {
-        // เชื่อมต่อกับฐานข้อมูล
+        //connect to db
         let pool = await sql.connect(dbConfig);
         let result = await pool.request().query('SELECT * FROM catalogue'); // แก้ไขคำสั่ง SQL ตามโครงสร้างของคุณ
 
@@ -126,16 +126,16 @@ app.get('/product/:id', async (req, res) => {
     }
 });
 
+//image
 const uploadPath =  './public/image';
-// image uploading
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, uploadPath);
     },
     filename: function (req, file, cb) {
     const timestamp = Date.now();
-      const random = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
-      const fileName = `${timestamp}_${random}.png`; // Append ".png"
+      const random = Math.floor(Math.random() * 10000); 
+      const fileName = `${timestamp}_${random}.png`; 
       cb(null, fileName);
     }
   });
