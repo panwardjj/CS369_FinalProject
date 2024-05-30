@@ -21,7 +21,7 @@ app.use(express.json());
 const dbConfig = {
     user: 'SA',
     password: 'MyStrongPass123',
-    server: 'localhost',
+    server: 'store.c98cuum2qn3w.us-east-1.rds.amazonaws.com',
     database: 'store',
     options: {
         encrypt: false, 
